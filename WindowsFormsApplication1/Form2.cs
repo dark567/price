@@ -226,5 +226,14 @@ namespace WindowsFormsApplication1
             }
         }
 
+        private void label6_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = ""; 
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+            textBox2.Text = "";
+        }
     }
 }
