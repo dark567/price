@@ -90,34 +90,10 @@ namespace WindowsFormsApplication1
             //}
 
 
-
-            PriceTabel(fb, null, null, null, null);
-
-            if (!string.IsNullOrEmpty(textBox2.Text))
+            try
             {
-                using (var w = new StreamWriter(textBox2.Text))
-                {
-                    foreach (DataColumn column in PriceTabel(fb, null, null, null, null).Columns)
-                    {
-                        w.Write($"{column.ColumnName};");
-                    }
-                    w.Write("\n");
+                PriceTabel(fb, null, null, null, null);
 
-                    foreach (DataRow dataRow in PriceTabel(fb, null, null, null, null).AsEnumerable().ToList())
-                    {
-                        var first = dataRow[0].ToString(); // 
-                        var second = dataRow[1].ToString(); //
-                        var third = dataRow[2].ToString(); //
-                        var fourth = dataRow[3].ToString(); //
-                        var line = string.Format($"{first};{second};{third};{fourth}");
-                        w.WriteLine(line);
-                        w.Flush();
-                    }
-                }
-            }
-            else
-            {
-                label8_Click(sender, e);
                 if (!string.IsNullOrEmpty(textBox2.Text))
                 {
                     using (var w = new StreamWriter(textBox2.Text))
@@ -140,6 +116,37 @@ namespace WindowsFormsApplication1
                         }
                     }
                 }
+                else
+                {
+                    label8_Click(sender, e);
+                    if (!string.IsNullOrEmpty(textBox2.Text))
+                    {
+                        using (var w = new StreamWriter(textBox2.Text))
+                        {
+                            foreach (DataColumn column in PriceTabel(fb, null, null, null, null).Columns)
+                            {
+                                w.Write($"{column.ColumnName};");
+                            }
+                            w.Write("\n");
+
+                            foreach (DataRow dataRow in PriceTabel(fb, null, null, null, null).AsEnumerable().ToList())
+                            {
+                                var first = dataRow[0].ToString(); // 
+                                var second = dataRow[1].ToString(); //
+                                var third = dataRow[2].ToString(); //
+                                var fourth = dataRow[3].ToString(); //
+                                var line = string.Format($"{first};{second};{third};{fourth}");
+                                w.WriteLine(line);
+                                w.Flush();
+                            }
+                        }
+                    }
+                }
+                MessageBox.Show("Выгрузка успешно");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Выгрузка неудачно {ex.Message}");
             }
         }
 
@@ -212,7 +219,7 @@ namespace WindowsFormsApplication1
                 conn.Open();
                 FbDataAdapter datareader = new FbDataAdapter(cmd);
                 DataTable usuarios = new DataTable();
-   
+
                 datareader.Fill(usuarios);
                 return usuarios;
             }
@@ -228,7 +235,7 @@ namespace WindowsFormsApplication1
 
         private void label6_Click(object sender, EventArgs e)
         {
-            textBox1.Text = ""; 
+            textBox1.Text = "";
         }
 
         private void label7_Click(object sender, EventArgs e)
