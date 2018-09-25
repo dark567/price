@@ -206,7 +206,6 @@ namespace WindowsFormsApplication1
                 conn.Open();
                 FbDataAdapter datareader = new FbDataAdapter(cmd);
                 DataTable usuarios = new DataTable();
-
                 datareader.Fill(usuarios);
                 return usuarios;
             }
