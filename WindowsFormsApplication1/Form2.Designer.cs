@@ -99,6 +99,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(303, 26);
             this.textBox2.TabIndex = 9;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // label5
             // 
@@ -127,7 +128,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label7.Location = new System.Drawing.Point(450, 23);
+            this.label7.Location = new System.Drawing.Point(431, 28);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(20, 20);
             this.label7.TabIndex = 13;
@@ -138,7 +139,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label8.Location = new System.Drawing.Point(427, 21);
+            this.label8.Location = new System.Drawing.Point(417, 28);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(21, 20);
             this.label8.TabIndex = 12;

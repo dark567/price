@@ -10,7 +10,8 @@ namespace WindowsFormsApplication1
     public partial class Form2 : Form
     {
         FbConnection fb; //fb ссылается на соединение с нашей базой данных, по-этому она должна быть доступна всем методам нашего класса
-        public string path_db;
+        public string pathDb;
+        public string fileDb;
         bool status = false;
 
         public Form2()
@@ -44,7 +45,7 @@ namespace WindowsFormsApplication1
             fb_con.Charset = "UTF8"; //используемая кодировка
             fb_con.UserID = "SYSDBA"; //логин
             fb_con.Password = "masterkey"; //пароль
-            fb_con.Database = db_puth.Value; //путь к файлу базы данных
+            fb_con.Database = DbPuth.Value; //путь к файлу базы данных
             fb_con.ServerType = 0; //указываем тип сервера (0 - "полноценный Firebird" (classic или super server), 1 - встроенный (embedded))
             fb = new FbConnection(fb_con.ToString()); //передаем нашу строку подключения объекту класса FbConnection
 
@@ -143,14 +144,16 @@ namespace WindowsFormsApplication1
                 //Создание объекта, для работы с файлом
                 INIManager manager = new INIManager(Application.StartupPath + "\\set.ini");
                 //Получить значение по ключу name из секции main
-                path_db = manager.GetPrivateString("connection", "db");
-                db_puth.Value = path_db;
-
-                File.AppendAllText(Application.StartupPath + @"\Event.log", "путь к db:" + db_puth.Value + "\n");
+                pathDb = manager.GetPrivateString("connection", "db");
+                fileDb = manager.GetPrivateString("file", "puth");
+                DbPuth.Value = pathDb;
+                FilePuth.Value = fileDb;
+                File.AppendAllText(Application.StartupPath + @"\Event.log", "путь к db:" + DbPuth.Value + "\n");
                 //Записать значение по ключу age в секции main
                 // manager.WritePrivateString("main", "age", "21");
 
-                OnUserNameMessage(path_db);
+                OnUserNameMessage(DbPuth.Value);
+                textBox2.Text = FilePuth.Value;
             }
             catch (Exception ex)
             {
@@ -190,10 +193,10 @@ namespace WindowsFormsApplication1
 
         public DataTable PriceTabel(FbConnection conn, string GRP_ID, string FILTER_, string REFRESH_ID, string IN_ORG_ID)
         {
-            if (string.IsNullOrEmpty(GRP_ID)) { GRP_ID = "null"; }
-            if (string.IsNullOrEmpty(FILTER_)) { FILTER_ = "null"; }
-            if (string.IsNullOrEmpty(REFRESH_ID)) { REFRESH_ID = "null"; }
-            if (string.IsNullOrEmpty(IN_ORG_ID)) { IN_ORG_ID = "null"; }
+            //if (string.IsNullOrEmpty(GRP_ID)) { GRP_ID = "null"; }
+            //if (string.IsNullOrEmpty(FILTER_)) { FILTER_ = "null"; }
+            //if (string.IsNullOrEmpty(REFRESH_ID)) { REFRESH_ID = "null"; }
+            //if (string.IsNullOrEmpty(IN_ORG_ID)) { IN_ORG_ID = "null"; }
 
             //string query = $"SELECT ID, CODE, NAME, UNIT FROM Z$DIC_PRICE_S({GRP_ID}, {FILTER_}, {REFRESH_ID}, {IN_ORG_ID})";
             string query = $"select GOOD_ID, ORG_ID, TYPE_BONUS_ID, TYPE_PRICE_ID, PRICE_OUT_DISC from DIC_PRICE_LIST order by GOOD_ID";
@@ -227,6 +230,21 @@ namespace WindowsFormsApplication1
         private void label7_Click(object sender, EventArgs e)
         {
             textBox2.Text = "";
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                //Создание объекта, для работы с файлом
+                INIManager manager = new INIManager(Application.StartupPath + "\\set.ini");
+                //Записать значение по ключу age в секции main
+                 manager.WritePrivateString("file", "puth", textBox2.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ini не прочтен" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

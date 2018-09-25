@@ -19,11 +19,15 @@ namespace WindowsFormsApplication1
             Application.Run(new Form2());
         }
     }
-    static class db_puth
+    static class DbPuth
         {
             public static string Value { get; set; }
         }
+    static class FilePuth
+    {
+        public static string Value { get; set; }
+    }
 
 
-    
+
 }
