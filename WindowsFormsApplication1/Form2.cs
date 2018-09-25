@@ -1,16 +1,9 @@
 ﻿using FirebirdSql.Data.FirebirdClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WindowsFormsApplication1;
 
 namespace WindowsFormsApplication1
 {
@@ -18,6 +11,7 @@ namespace WindowsFormsApplication1
     {
         FbConnection fb; //fb ссылается на соединение с нашей базой данных, по-этому она должна быть доступна всем методам нашего класса
         public string path_db;
+        bool status = false;
 
         public Form2()
         {
@@ -32,9 +26,10 @@ namespace WindowsFormsApplication1
             if (OPF.ShowDialog() == DialogResult.OK)
             {
                 textBox2.Text = OPF.FileName;
-
-                //MessageBox.Show(OPF.FileName);
+                status = true;
             }
+            else
+                status = false;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -53,6 +48,7 @@ namespace WindowsFormsApplication1
             fb_con.ServerType = 0; //указываем тип сервера (0 - "полноценный Firebird" (classic или super server), 1 - встроенный (embedded))
             fb = new FbConnection(fb_con.ToString()); //передаем нашу строку подключения объекту класса FbConnection
 
+            #region example how fill
             // RepModel r = new RepModel();
             //MessageBox.Show(r.Select(fb).Name);
 
@@ -88,65 +84,55 @@ namespace WindowsFormsApplication1
             //        }
             //    }
             //}
-
+            #endregion
 
             try
             {
                 PriceTabel(fb, null, null, null, null);
 
                 if (!string.IsNullOrEmpty(textBox2.Text))
-                {
-                    using (var w = new StreamWriter(textBox2.Text))
-                    {
-                        foreach (DataColumn column in PriceTabel(fb, null, null, null, null).Columns)
-                        {
-                            w.Write($"{column.ColumnName};");
-                        }
-                        w.Write("\n");
-
-                        foreach (DataRow dataRow in PriceTabel(fb, null, null, null, null).AsEnumerable().ToList())
-                        {
-                            var first = dataRow[0].ToString(); // 
-                            var second = dataRow[1].ToString(); //
-                            var third = dataRow[2].ToString(); //
-                            var fourth = dataRow[3].ToString(); //
-                            var line = string.Format($"{first};{second};{third};{fourth}");
-                            w.WriteLine(line);
-                            w.Flush();
-                        }
-                    }
-                }
+                    Fillcsv();
+                
                 else
                 {
                     label8_Click(sender, e);
                     if (!string.IsNullOrEmpty(textBox2.Text))
-                    {
-                        using (var w = new StreamWriter(textBox2.Text))
-                        {
-                            foreach (DataColumn column in PriceTabel(fb, null, null, null, null).Columns)
-                            {
-                                w.Write($"{column.ColumnName};");
-                            }
-                            w.Write("\n");
-
-                            foreach (DataRow dataRow in PriceTabel(fb, null, null, null, null).AsEnumerable().ToList())
-                            {
-                                var first = dataRow[0].ToString(); // 
-                                var second = dataRow[1].ToString(); //
-                                var third = dataRow[2].ToString(); //
-                                var fourth = dataRow[3].ToString(); //
-                                var line = string.Format($"{first};{second};{third};{fourth}");
-                                w.WriteLine(line);
-                                w.Flush();
-                            }
-                        }
-                    }
+                        Fillcsv();
                 }
-                MessageBox.Show("Выгрузка успешно");
+                if (status)
+                    MessageBox.Show("выгружено");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Выгрузка неудачно {ex.Message}");
+            }
+        }
+
+        private void Fillcsv()
+        {
+            using (var w = new StreamWriter(textBox2.Text))
+            {
+                int ColumnsCount = PriceTabel(fb, null, null, null, null).Columns.Count;
+                string line = "";
+
+                foreach (DataColumn column in PriceTabel(fb, null, null, null, null).Columns)
+                {
+                    w.Write($"{column.ColumnName};");
+                }
+                w.Write("\n");
+
+                foreach (DataRow dataRow in PriceTabel(fb, null, null, null, null).AsEnumerable().ToList())
+                {
+                    line = "";
+                    for (int i = 0; i < ColumnsCount; i++)
+                    {
+                        string first = dataRow[i].ToString().Replace(@",", ".") + ";";  
+                        line = line + first;
+                    }
+                     w.WriteLine(line);
+                    
+                    w.Flush();
+                }
             }
         }
 
@@ -209,9 +195,10 @@ namespace WindowsFormsApplication1
             if (string.IsNullOrEmpty(REFRESH_ID)) { REFRESH_ID = "null"; }
             if (string.IsNullOrEmpty(IN_ORG_ID)) { IN_ORG_ID = "null"; }
 
-            string query = $"SELECT ID, CODE, NAME, UNIT FROM Z$DIC_PRICE_S({GRP_ID}, {FILTER_}, {REFRESH_ID}, {IN_ORG_ID})";
+            //string query = $"SELECT ID, CODE, NAME, UNIT FROM Z$DIC_PRICE_S({GRP_ID}, {FILTER_}, {REFRESH_ID}, {IN_ORG_ID})";
+            string query = $"select GOOD_ID, ORG_ID, TYPE_BONUS_ID, TYPE_PRICE_ID, PRICE_OUT_DISC from DIC_PRICE_LIST order by GOOD_ID";
 
-            // MessageBox.Show($"{query}");
+              // MessageBox.Show($"{query}");
             FbCommand cmd = new FbCommand(query, conn);
 
             try
