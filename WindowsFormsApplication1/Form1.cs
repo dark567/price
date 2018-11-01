@@ -38,17 +38,27 @@ namespace WindowsFormsApplication1
             Application.Exit();
         }
 
+        /// <summary>
+        /// button выгрузка
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
+            #region fbstring
             // формируем connection string для последующего соединения с нашей базой данных
-            FbConnectionStringBuilder fb_con = new FbConnectionStringBuilder();
-            fb_con.Charset = "UTF8"; //используемая кодировка
-            fb_con.UserID = "SYSDBA"; //логин
-            fb_con.Password = "masterkey"; //пароль
-            fb_con.Database = DbPuth.Value; //путь к файлу базы данных
-            fb_con.ServerType = 0; //указываем тип сервера (0 - "полноценный Firebird" (classic или super server), 1 - встроенный (embedded))
+            FbConnectionStringBuilder fb_con = new FbConnectionStringBuilder
+            {
+                Charset = "UTF8", //используемая кодировка
+                UserID = "SYSDBA", //логин
+                Password = "masterkey", //пароль
+                Database = DbPuth.Value, //путь к файлу базы данных
+                ServerType = 0 //указываем тип сервера (0 - "полноценный Firebird" (classic или super server), 1 - встроенный (embedded))
+            }; 
             fb = new FbConnection(fb_con.ToString()); //передаем нашу строку подключения объекту класса FbConnection
+            #endregion
 
+ 
             #region example how fill
             // RepModel r = new RepModel();
             //MessageBox.Show(r.Select(fb).Name);
@@ -111,6 +121,17 @@ namespace WindowsFormsApplication1
 
         private void Fillcsv()
         {
+            var directory = System.IO.Path.GetDirectoryName(textBox2.Text);
+
+            if (!Directory.Exists(directory))
+            {
+                MessageBox.Show("Не существующий путь");
+                textBox2.Text = "";
+                status = false;
+                return;
+            }
+
+
             using (var w = new StreamWriter(textBox2.Text))
             {
                 int ColumnsCount = PriceTabel(fb, null, null, null, null).Columns.Count;
