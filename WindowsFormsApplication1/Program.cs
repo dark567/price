@@ -23,7 +23,7 @@ namespace WindowsFormsApplication1
         {
             public static string Value { get; set; }
         }
-    static class FilePuth
+    static class FilePuth   
     {
         public static string Value { get; set; }
     }
